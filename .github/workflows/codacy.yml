@@ -43,7 +43,24 @@ jobs:
     
     - name: Show outdated dependencies
       run: cat outdated_dependencies.txt
+
+    - name: Security audit with pip-audit
+      run: |
+        pip install pip-audit
+        pip-audit
   
+    - name: Upload coverage to Codacy
+      run: |
+        pip install codacy-coverage
+        coverage run -m pytest app/modules/ --ignore-glob='*selenium*'
+        coverage xml 
+        python-codacy-coverage -r coverage.xml
+      env:
+        FLASK_ENV: testing
+        MARIADB_HOSTNAME: 127.0.0.1
+        MARIADB_PORT: 3306
+        MARIADB_TEST_DATABASE: uvlhubdb_test
+        MARIADB_USER: uvlhub_user
 
     - name: Upload coverage to Codacy
       run: |
